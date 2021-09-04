@@ -25,7 +25,7 @@ List of contents:
 ```json
 {
     "amount": "int",
-    "reason": "string",
+    "reason": "string(250)",
     "partnerUuid"?: "UUID",
     "transactionDate": "timestamp"
 }
@@ -164,6 +164,18 @@ List of contents:
             {
                 "error": "invalid data format",
                 "description": "amount or reason field was not provided"
+            }
+            ```
+            ```json
+            {
+                "error": "invalid data format",
+                "description": "amount of funds cannot be 0"
+            }
+            ```
+            ```json
+            {
+                "error": "invalid data format",
+                "description": "reason cannot be more than 250 characters"
             }
             ```
             ```json
