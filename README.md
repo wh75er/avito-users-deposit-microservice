@@ -18,23 +18,25 @@
 
 Здесь представлены таблицы БД, которые используются в проекте:
 
+
 ```sql
-CREATE TABLE IF NOT EXISTS deposits(
-    id serial PRIMARY KEY,
-    userUuid UUID NOT NULL UNIQUE,
-    deposit INT NOT NULL,
-    creationDate TIMESTAMP NOT NULL
+CREATE TABLE IF NOT EXISTS Deposits(
+    Id serial PRIMARY KEY,
+    UserUuid UUID NOT NULL UNIQUE,
+    Deposit INT NOT NULL,
+    CreationDate TIMESTAMP NOT NULL
 );
 ```
 
 ```sql
-CREATE TABLE IF NOT EXISTS transactions(
-    id serial PRIMARY KEY,
-    ownerUuid UUID NOT NULL UNIQUE,
-    amount INT NOT NULL,
-    reason VARCHAR(250) NOT NULL,
-    partnerUuid UUID,
-    transactionDate TIMESTAMP NOT NULL
+CREATE TABLE IF NOT EXISTS Transactions(
+    Id serial PRIMARY KEY,
+    DepositId INT REFERENCES Deposits(Id),
+    OwnerUuid UUID NOT NULL,
+    Amount INT NOT NULL,
+    Reason VARCHAR(250) NOT NULL,
+    PartnerUuid UUID,
+    TransactionDate TIMESTAMP NOT NULL
 );
 ```
 
