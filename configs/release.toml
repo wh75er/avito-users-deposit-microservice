@@ -1,0 +1,7 @@
+[server]
+port = 3000
+
+[storage]
+host = "localhost"
+port = 5432
+maxPoolConn = 10
