@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	a := app.App{}
-	a.ConfigureApp()
+	a := app.New()
+	a.Run("release.toml")
 }

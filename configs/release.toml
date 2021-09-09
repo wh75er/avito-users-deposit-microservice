@@ -2,6 +2,6 @@
 port = 3000
 
 [storage]
-host = "localhost"
-port = 5432
-maxPoolConn = 10
+address = "postgresql://postgres:postgres@localhost:5432/postgres"
+driver = "pgx"
+maxPoolConn = 50
