@@ -6,10 +6,10 @@ import (
 )
 
 type Deposit struct {
-	Id int64 `json:",omitempty"`
-	UserUuid uuid.UUID
-	Deposit int64
-	CreationDate time.Time
+	Id int64 `json:"id,omitempty"`
+	UserUuid uuid.UUID `json:"userUuid"`
+	Deposit int64 `json:"deposit"`
+	CreationDate time.Time `json:"creationDate"`
 }
 
 type DepositRepository interface {

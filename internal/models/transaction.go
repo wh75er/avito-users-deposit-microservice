@@ -6,13 +6,13 @@ import (
 )
 
 type Transaction struct {
-	Id int64 `json:",omitempty"`
-	DepositId int64 `json:",omitempty"`
-	OwnerUuid uuid.UUID `json:",omitempty"`
-	Amount int64
-	Reason string
+	Id int64 `json:"id,omitempty"`
+	DepositId int64 `json:"depositId,omitempty"`
+	OwnerUuid uuid.UUID `json:"ownerUuid,omitempty"`
+	Amount int64 `json:"amount"`
+	Reason string `json:"reason"`
 	PartnerUuid uuid.NullUUID `json:"initiatorUserUuid,omitempty"`
-	TransactionDate time.Time `json:",omitempty"`
+	TransactionDate time.Time `json:"transactionDate,omitempty"`
 }
 
 type TransactionRepository interface {

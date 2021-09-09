@@ -13,6 +13,7 @@ List of contents:
 
 ```json
 {
+    "id": "int",
     "userUuid": "UUID",
     "deposit": "int",
     "creationDate": "timestamp"
@@ -23,6 +24,7 @@ List of contents:
 
 ```json
 {
+    "id": "int",
     "amount": "int",
     "reason": "string(250)",
     "partnerUuid"?: "UUID",
@@ -39,6 +41,7 @@ List of contents:
             ```json
             {
                 "data": {
+                    "id": 1,
                     "userUuid": "13570e16-4d98-4823-b266-eeb3f4776eda",
                     "deposit": 0,
                     "creationDate": 1630753631
