@@ -1,9 +1,11 @@
 package app
 
 import (
+	depositDelivery "bank-microservice/internal/delivery/deposit/http"
 	transactionDelivery "bank-microservice/internal/delivery/transaction/http"
 	depositRepPostgres "bank-microservice/internal/repository/deposit/postgres"
 	transactionRepPostgres "bank-microservice/internal/repository/transaction/postgres"
+	depositUsecase "bank-microservice/internal/usecase/deposit"
 	transactionUsecase "bank-microservice/internal/usecase/transaction"
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
@@ -41,8 +43,10 @@ func (a *App) Run(configFilename string) {
 	depositRepository := depositRepPostgres.New(a.db, a.logger)
 	transactionRepository := transactionRepPostgres.New(a.db, a.logger)
 
+	depositUcase := depositUsecase.New(depositRepository, a.logger)
 	transactionUcase := transactionUsecase.New(depositRepository, transactionRepository, a.logger)
 
+	depositDelivery.NewDepositHandler(depositUcase, a.server, a.logger)
 	transactionDelivery.NewTransactionHandler(transactionUcase, a.server, a.logger)
 
 	a.server.Use(middleware.Logger())

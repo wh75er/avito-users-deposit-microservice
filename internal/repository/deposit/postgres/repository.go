@@ -18,41 +18,8 @@ func New(db *sqlx.DB, logger *logrus.Logger) models.DepositRepository {
 	return &DepositRepository{ db, logger }
 }
 
-
-func (r *DepositRepository) GetDepositIdByOwner(ownerUuid uuid.UUID) (id int64, e error) {
-	e = r.Db.Get(&id, "SELECT id FROM deposits WHERE userUuid = $1", ownerUuid)
-	if e == sql.ErrConnDone {
-		r.Logger.Error("Database error: ", e.Error())
-		e = errors.E(errors.RepositoryDownErr, e)
-	} else if e == sql.ErrNoRows {
-		r.Logger.Error("Database error: ", e.Error())
-		e = errors.E(errors.RepositoryNoRows, e)
-	} else if e != nil {
-		r.Logger.Error("Database error: ", e.Error())
-		e = errors.E(errors.RepositoryQueryErr)
-	}
-
-	return
-}
-
 func (r *DepositRepository) GetDepositByOwner(ownerUuid uuid.UUID) (d models.Deposit, e error) {
 	e = r.Db.Get(&d, "SELECT id, userUuid, deposit, creationDate FROM deposits WHERE userUuid = $1", ownerUuid)
-	if e == sql.ErrConnDone {
-		r.Logger.Error("Database error: ", e.Error())
-		e = errors.E(errors.RepositoryDownErr, e)
-	} else if e == sql.ErrNoRows {
-		r.Logger.Error("Database error: ", e.Error())
-		e = errors.E(errors.RepositoryNoRows, e)
-	} else if e != nil {
-		r.Logger.Error("Database error: ", e.Error())
-		e = errors.E(errors.RepositoryQueryErr)
-	}
-
-	return
-}
-
-func (r *DepositRepository) GetDepositById(id int64) (d *models.Deposit, e error) {
-	e = r.Db.Get(&d, "SELECT id, userUuid, deposit, creationDate FROM deposits WHERE id = $1", id)
 	if e == sql.ErrConnDone {
 		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryDownErr, e)

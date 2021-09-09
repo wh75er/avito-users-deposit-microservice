@@ -3,13 +3,14 @@ package transaction
 import (
 	"bank-microservice/internal/errors"
 	"bank-microservice/internal/models"
+	ucaseHelpers "bank-microservice/internal/usecase"
 	"github.com/google/uuid"
 	"time"
 )
 
 func (u *Usecase) makeSoloTransaction(ownerUuid uuid.UUID, t *models.Transaction) error {
 	// Check if owner's deposit exists
-	d, depositExists, e := u.getUsersDepositByUuid(ownerUuid)
+	d, depositExists, e := ucaseHelpers.GetUsersDepositByUuid(u.DepositRepository, ownerUuid)
 	if e != nil {
 		return e
 	}
@@ -68,7 +69,7 @@ func (u *Usecase) makeDuoTransaction(targetUuid uuid.UUID, initiatorUuid uuid.UU
 	}
 
 	// Find initiator's deposit
-	initiatorDeposit, initiatorDepositExists, e := u.getUsersDepositByUuid(initiatorUuid)
+	initiatorDeposit, initiatorDepositExists, e := ucaseHelpers.GetUsersDepositByUuid(u.DepositRepository, initiatorUuid)
 	if e != nil {
 		return e
 	}
@@ -80,7 +81,7 @@ func (u *Usecase) makeDuoTransaction(targetUuid uuid.UUID, initiatorUuid uuid.UU
 	}
 
 	// Find target's deposit
-	targetDeposit, targetDepositExists, e := u.getUsersDepositByUuid(targetUuid)
+	targetDeposit, targetDepositExists, e := ucaseHelpers.GetUsersDepositByUuid(u.DepositRepository, targetUuid)
 	if e != nil {
 		return e
 	}
@@ -172,24 +173,6 @@ func (u *Usecase) initDepositForUser(targetUuid uuid.UUID) (d models.Deposit, e 
 		return
 	}
 	d.Id = id
-
-	return
-}
-
-func (u *Usecase) getUsersDepositByUuid(targetUuid uuid.UUID) (d models.Deposit, exists bool, e error) {
-	exists = true
-
-	// Check if owner deposit exists
-	d, e = u.DepositRepository.GetDepositByOwner(targetUuid)
-	if e != nil {
-		if errors.GetKind(e) == errors.RepositoryNoRows {
-			e = nil
-			exists = false
-		} else {
-			e = errors.E(errors.RepositoryDepositsErr, e)
-			return
-		}
-	}
 
 	return
 }

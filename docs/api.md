@@ -6,7 +6,6 @@ Simple and small markdown api documentation
 
 List of contents:
 
-- [`POST /api/v1/deposits` - Create deposit for the user](#create-deposit-for-the-user)
 - [`GET /api/v1/deposits/{user-uuid}` - Get info about user's deposit](#get-user-deposit-info)
 - [`POST /api/v1/deposits/{user-uuid}/transactions` - Make transaction to modify user's deposit funds](#make-user-deposit-transaction)
 
