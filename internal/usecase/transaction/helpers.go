@@ -17,7 +17,8 @@ func (u *Usecase) makeSoloTransaction(ownerUuid uuid.UUID, t *models.Transaction
 	// If not exists and money withdrawing operation performed
 	// exit with error
 	if !depositExists && t.Amount < 0 {
-		return errors.E(errors.OwnerDepositNotFoundErr)
+		e = errors.E(errors.OwnerDepositNotFoundErr)
+		return e
 	}
 
 	// if deposit not exists, but there is money raising operation
@@ -38,27 +39,32 @@ func (u *Usecase) makeSoloTransaction(ownerUuid uuid.UUID, t *models.Transaction
 	// Init transaction fields
 	t.OwnerUuid = ownerUuid
 	t.DepositId = d.Id
-	t.TransactionDate = time.Now().Unix()
+	t.TransactionDate = time.Now().UTC()
 
 	// Make transaction
 	e = u.TransactionRepository.AddTransaction(t)
 	if e != nil {
-		return errors.E(errors.RepositoryTransactionsErr, e)
+		e = errors.E(errors.RepositoryTransactionsErr, e)
+		return e
 	}
 
 	// Update deposit balance
 	e = u.DepositRepository.UpdateDepositByOwner(&d)
 	if e != nil {
-		return errors.E(errors.RepositoryDepositsErr)
+		e = errors.E(errors.RepositoryDepositsErr)
+		return e
 	}
 
 	return nil
 }
 
 func (u *Usecase) makeDuoTransaction(targetUuid uuid.UUID, initiatorUuid uuid.UUID, t *models.Transaction) error {
+	var e error
+
 	// if operation is money withdraw - exit
 	if t.Amount < 0 {
-		return errors.E(errors.InitiatorFromTargetWithdrawErr)
+		e = errors.E(errors.InitiatorFromTargetWithdrawErr)
+		return e
 	}
 
 	// Find initiator's deposit
@@ -69,7 +75,8 @@ func (u *Usecase) makeDuoTransaction(targetUuid uuid.UUID, initiatorUuid uuid.UU
 
 	// If initiator doesn't have a deposit - exit
 	if !initiatorDepositExists {
-		return errors.E(errors.InitiatorDepositNotFoundErr)
+		e = errors.E(errors.InitiatorDepositNotFoundErr)
+		return e
 	}
 
 	// Find target's deposit
@@ -92,32 +99,32 @@ func (u *Usecase) makeDuoTransaction(targetUuid uuid.UUID, initiatorUuid uuid.UU
 	// Change initiator balance, if not enough funds - exit
 	initiatorDeposit.Deposit, e = u.changeDepositBalance(initiatorDeposit.Deposit, -t.Amount)
 	if e != nil {
-		return errors.E(errors.NotEnoughFundsInitiatorErr, e)
+		e = errors.E(errors.NotEnoughFundsInitiatorErr, e)
+		return e
 	}
 
 	// Change target balance, if error - unexpected exit(t.Amount should be >= 0)
 	targetDeposit.Deposit, e = u.changeDepositBalance(targetDeposit.Deposit, t.Amount)
 	if e != nil {
-		return errors.E(errors.UnexpectedErr, e)
+		e = errors.E(errors.UnexpectedErr, e)
+		return e
 	}
 
 	// Change initiator deposit balance in repository
 	e = u.DepositRepository.UpdateDepositByOwner(&initiatorDeposit)
 	if e != nil {
-		if e != nil {
-			return errors.E(errors.RepositoryDepositsErr)
-		}
+		e = errors.E(errors.RepositoryDepositsErr)
+		return e
 	}
 
 	// Change target deposit balance in repository
 	e = u.DepositRepository.UpdateDepositByOwner(&targetDeposit)
 	if e != nil {
-		if e != nil {
-			return errors.E(errors.RepositoryDepositsErr)
-		}
+		e = errors.E(errors.RepositoryDepositsErr)
+		return e
 	}
 
-	currentTime := time.Now().Unix()
+	currentTime := time.Now().UTC()
 
 	// Init transaction for target
 	targetTransaction := models.Transaction {
@@ -132,7 +139,8 @@ func (u *Usecase) makeDuoTransaction(targetUuid uuid.UUID, initiatorUuid uuid.UU
 	// Make transaction for target
 	e = u.TransactionRepository.AddTransaction(&targetTransaction)
 	if e != nil {
-		return errors.E(errors.RepositoryTransactionsErr, e)
+		e = errors.E(errors.RepositoryTransactionsErr, e)
+		return e
 	}
 
 	// Init transaction for initiator
@@ -148,14 +156,15 @@ func (u *Usecase) makeDuoTransaction(targetUuid uuid.UUID, initiatorUuid uuid.UU
 	// Make transaction for initiator
 	e = u.TransactionRepository.AddTransaction(&initiatorTransaction)
 	if e != nil {
-		return errors.E(errors.RepositoryTransactionsErr, e)
+		e = errors.E(errors.RepositoryTransactionsErr, e)
+		return e
 	}
 
 	return nil
 }
 
 func (u *Usecase) initDepositForUser(targetUuid uuid.UUID) (d models.Deposit, e error) {
-	d = models.Deposit{UserUuid: targetUuid, Deposit: 0, CreationDate: time.Now().Unix()}
+	d = models.Deposit{UserUuid: targetUuid, Deposit: 0, CreationDate: time.Now().UTC()}
 
 	id, e := u.DepositRepository.AddNewDepositForOwner(&d)
 	if e != nil {
@@ -174,6 +183,7 @@ func (u *Usecase) getUsersDepositByUuid(targetUuid uuid.UUID) (d models.Deposit,
 	d, e = u.DepositRepository.GetDepositByOwner(targetUuid)
 	if e != nil {
 		if errors.GetKind(e) == errors.RepositoryNoRows {
+			e = nil
 			exists = false
 		} else {
 			e = errors.E(errors.RepositoryDepositsErr, e)
@@ -185,7 +195,7 @@ func (u *Usecase) getUsersDepositByUuid(targetUuid uuid.UUID) (d models.Deposit,
 }
 
 func (u *Usecase) changeDepositBalance(balance int64, delta int64) (newBalance int64, e error) {
-	if newBalance = balance + delta; balance < 0 {
+	if newBalance = balance + delta; newBalance < 0 {
 		e = errors.E(errors.NotEnoughFundsOwnerErr)
 	}
 

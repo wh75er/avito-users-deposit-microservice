@@ -1,14 +1,21 @@
 package app
 
 import (
+	transactionDelivery "bank-microservice/internal/delivery/transaction/http"
+	depositRepPostgres "bank-microservice/internal/repository/deposit/postgres"
+	transactionRepPostgres "bank-microservice/internal/repository/transaction/postgres"
+	transactionUsecase "bank-microservice/internal/usecase/transaction"
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
+	"net/http"
+	"strconv"
 )
 
 type App struct {
-	Db *sqlx.DB
+	db *sqlx.DB
 	conf *config
 	configName string
 	server *echo.Echo
@@ -31,8 +38,18 @@ func (a *App) Run(configFilename string) {
 	a.setupApp()
 	a.setupStorage()
 
-	// TO DO init all delivery, usecases, repositories
-	// TO DO start server
+	depositRepository := depositRepPostgres.New(a.db, a.logger)
+	transactionRepository := transactionRepPostgres.New(a.db, a.logger)
+
+	transactionUcase := transactionUsecase.New(depositRepository, transactionRepository, a.logger)
+
+	transactionDelivery.NewTransactionHandler(transactionUcase, a.server, a.logger)
+
+	a.server.Use(middleware.Logger())
+
+	if err := a.server.Start(":" + strconv.Itoa(a.conf.Server.Port)); err == http.ErrServerClosed {
+		a.logger.Fatal(err)
+	}
 }
 
 func (a *App) setupStorage() {
@@ -65,5 +82,5 @@ func (a *App) establishDbConnection(maxPoolConn int, driverName, dbUrl string) {
 
 	db.SetMaxOpenConns(maxPoolConn)
 
-	a.Db = db
+	a.db = db
 }

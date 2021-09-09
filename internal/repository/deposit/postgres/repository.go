@@ -20,12 +20,15 @@ func New(db *sqlx.DB, logger *logrus.Logger) models.DepositRepository {
 
 
 func (r *DepositRepository) GetDepositIdByOwner(ownerUuid uuid.UUID) (id int64, e error) {
-	e = r.Db.Get(&id, "SELECT id FROM deposits WHERE userUuid == $1", ownerUuid)
+	e = r.Db.Get(&id, "SELECT id FROM deposits WHERE userUuid = $1", ownerUuid)
 	if e == sql.ErrConnDone {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryDownErr, e)
 	} else if e == sql.ErrNoRows {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryNoRows, e)
 	} else if e != nil {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryQueryErr)
 	}
 
@@ -33,12 +36,15 @@ func (r *DepositRepository) GetDepositIdByOwner(ownerUuid uuid.UUID) (id int64, 
 }
 
 func (r *DepositRepository) GetDepositByOwner(ownerUuid uuid.UUID) (d models.Deposit, e error) {
-	e = r.Db.Get(&d, "SELECT id, userUuid, deposit, creationDate FROM deposits WHERE userUuid == $1", ownerUuid)
+	e = r.Db.Get(&d, "SELECT id, userUuid, deposit, creationDate FROM deposits WHERE userUuid = $1", ownerUuid)
 	if e == sql.ErrConnDone {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryDownErr, e)
 	} else if e == sql.ErrNoRows {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryNoRows, e)
 	} else if e != nil {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryQueryErr)
 	}
 
@@ -46,12 +52,15 @@ func (r *DepositRepository) GetDepositByOwner(ownerUuid uuid.UUID) (d models.Dep
 }
 
 func (r *DepositRepository) GetDepositById(id int64) (d *models.Deposit, e error) {
-	e = r.Db.Get(&d, "SELECT id, userUuid, deposit, creationDate FROM deposits WHERE id == $1", id)
+	e = r.Db.Get(&d, "SELECT id, userUuid, deposit, creationDate FROM deposits WHERE id = $1", id)
 	if e == sql.ErrConnDone {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryDownErr, e)
 	} else if e == sql.ErrNoRows {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryNoRows, e)
 	} else if e != nil {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryQueryErr)
 	}
 
@@ -62,8 +71,10 @@ func (r *DepositRepository) AddNewDepositForOwner(d *models.Deposit) (id int64, 
 	e = r.Db.QueryRowx("INSERT INTO deposits(userUuid, deposit, creationDate) VALUES ($1, $2, $3) RETURNING id",
 		d.UserUuid, d.Deposit, d.CreationDate).Scan(&id)
 	if e == sql.ErrConnDone {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryDownErr, e)
 	} else if e != nil {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryQueryErr, e)
 	}
 
@@ -74,8 +85,10 @@ func (r *DepositRepository) UpdateDepositByOwner(d *models.Deposit) (e error) {
 	_, e = r.Db.Exec("UPDATE deposits SET deposit = $1 WHERE userUuid = $2",
 		d.Deposit, d.UserUuid)
 	if e == sql.ErrConnDone {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryDownErr, e)
 	} else if e != nil {
+		r.Logger.Error("Database error: ", e.Error())
 		e = errors.E(errors.RepositoryQueryErr, e)
 	}
 

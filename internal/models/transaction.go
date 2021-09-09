@@ -2,16 +2,17 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"time"
 )
 
 type Transaction struct {
 	Id int64 `json:",omitempty"`
 	DepositId int64 `json:",omitempty"`
-	OwnerUuid uuid.UUID
+	OwnerUuid uuid.UUID `json:",omitempty"`
 	Amount int64
 	Reason string
 	PartnerUuid uuid.NullUUID `json:"initiatorUserUuid,omitempty"`
-	TransactionDate int64
+	TransactionDate time.Time `json:",omitempty"`
 }
 
 type TransactionRepository interface {

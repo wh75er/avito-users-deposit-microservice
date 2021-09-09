@@ -2,13 +2,14 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"time"
 )
 
 type Deposit struct {
 	Id int64 `json:"omitempty"`
 	UserUuid uuid.UUID
 	Deposit int64
-	CreationDate int64
+	CreationDate time.Time
 }
 
 type DepositRepository interface {

@@ -18,27 +18,37 @@ func New(DepositRep models.DepositRepository, TransactionRep models.TransactionR
 }
 
 func (u *Usecase) CreateTransaction(ownerUuid string, t *models.Transaction) error {
+	var e error
+
 	if t.Amount == 0 {
-		return errors.E(errors.FundsValidationErr)
+		e = errors.E(errors.FundsValidationErr)
+		u.Logger.Error("Usecase error: ", e.Error())
+		return e
 	}
 
 	if t.Reason == "" || len(t.Reason) > 250 {
-		return errors.E(errors.ReasonValidationErr)
+		e = errors.E(errors.ReasonValidationErr)
+		u.Logger.Error("Usecase error: ", e.Error())
+		return e
 	}
 
 	validOwnerUuid, e := uuid.Parse(ownerUuid)
 	if e != nil {
-		return errors.E(errors.UuidValidationErr, e)
+		e = errors.E(errors.UuidValidationErr, e)
+		u.Logger.Error("Usecase error: ", e.Error())
+		return e
 	}
 
 	if t.PartnerUuid.Valid {
 		e = u.makeDuoTransaction(validOwnerUuid, t.PartnerUuid.UUID, t)
 		if e != nil {
+			u.Logger.Error("Usecase error: ", e.Error())
 			return e
 		}
 	} else {
 		e = u.makeSoloTransaction(validOwnerUuid, t)
 		if e != nil {
+			u.Logger.Error("Usecase error: ", e.Error())
 			return e
 		}
 	}

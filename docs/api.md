@@ -31,42 +31,8 @@ List of contents:
 }
 ```
 
-##### Create deposit for the user
-1. `POST /api/v1/deposits` - Create empty deposit for the specified user
-    - Request Body:
-        ```json
-        {
-            "userUuid": "13570e16-4d98-4823-b266-eeb3f4776eda"
-        }
-        ```
-    - Responses:
-        - `200` 
-            ```json
-            {
-                "data": {
-                    "userUuid": "13570e16-4d98-4823-b266-eeb3f4776eda",
-                    "deposit": 0,
-                    "creationDate": 1630753631
-                }
-            }
-            ```
-        - `400`
-            ```json
-            {
-                "error": "invalid data format",
-                "description": "failed to convert provided userUuid field into UUID"
-            }
-            ```
-        - `500`
-            ```json
-            {
-                "error": "something went wrong with the repository",
-                "description": "database connection is down"
-            }
-            ```
-
 ##### Get user deposit info
-2. `GET /api/v1/deposits/{user-uuid}` - Get user's deposit info
+1. `GET /api/v1/deposits/{user-uuid}` - Get user's deposit info
     - Request Body:
         (empty)
     - Responses:
@@ -102,7 +68,7 @@ List of contents:
             ```
 
 ##### Make user deposit transaction
-3. `POST /api/v1/deposits/{user-uuid}/transactions` - Create new transaction on user's deposit to change funds
+2. `POST /api/v1/deposits/{user-uuid}/transactions` - Create new transaction on user's deposit to change funds
     - Request Body:
         ```json
         {
@@ -124,35 +90,7 @@ List of contents:
         }
         ```
     - Responses:
-        - `200` 
-            ```json
-            {
-                "data": {
-                    "amount": 500,
-                    "reason": "add funds from credit card via application",
-                    "transactionDate": 1630753631
-                }
-            }
-            ```
-            ```json
-            {
-                "data": {
-                    "amount": 500,
-                    "reason": "user to user transaction",
-                    "partnerUuid": "13570e16-4d98-4823-b266-eeb3f4776eda",
-                    "transactionDate": 1630753631
-                }
-            }
-            ```
-            ```json
-            {
-                "data": {
-                    "amount": -500,
-                    "reason": "system recommendation subscription",
-                    "transactionDate": 1630753631
-                }
-            }
-            ```
+        - `204` 
         - `400`
             ```json
             {
