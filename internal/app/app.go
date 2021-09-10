@@ -57,7 +57,7 @@ func (a *App) Run(configFilename string) {
 }
 
 func (a *App) setupStorage() {
-	a.establishDbConnection(a.conf.Storage.MaxPoolConn, a.conf.Storage.driver, a.conf.Storage.url)
+	a.establishDbConnection(a.conf.Storage.MaxPoolConn, a.conf.Storage.Driver, a.conf.Storage.Url)
 	a.logger.Info("Successfully established connection with database")
 }
 

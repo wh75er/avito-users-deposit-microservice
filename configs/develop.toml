@@ -1,0 +1,7 @@
+[server]
+port = 3000
+
+[storage]
+url = "postgresql://postgres:postgres@localhost:5432/postgres"
+driver = "pgx"
+maxPoolConn = 50

@@ -14,8 +14,8 @@ type Server struct {
 }
 
 type Storage struct {
-	url string
-	driver string
+	Url string
+	Driver string
 	MaxPoolConn int
 }
 

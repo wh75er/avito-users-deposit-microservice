@@ -2,6 +2,6 @@
 port = 3000
 
 [storage]
-address = "postgresql://postgres:postgres@localhost:5432/postgres"
+url = "postgresql://postgres:postgres@db:5432/postgres?sslmode=disable"
 driver = "pgx"
 maxPoolConn = 50
