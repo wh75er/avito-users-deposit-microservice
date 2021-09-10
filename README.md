@@ -7,6 +7,8 @@
 Оглавление:
 
 - [Документация API](#документация-api)
+- [Запуск](#запуск)
+- [Тестовые запросы для "потыкать"(curl)](#тестовые-запросы)
 
 ## Документация API
 
@@ -40,6 +42,52 @@ CREATE TABLE IF NOT EXISTS Transactions(
 );
 ```
 
+## Запуск
+
+Для запуска:
+
+```
+sudo docker-compose up
+```
+
+## Тестовые запросы
+
+Зачислить средства пользователю по указанному UUID(Успех):
+
+```
+curl -v -H "Content-Type: application/json" -X POST localhost:3000/api/v1/deposits/c4a07944-a0b3-4c10-9803-6af93971b3d5/transactions -d '{"amount": 400, "reason": "credit card via online bank"}'
+```
+
+Посмотреть информацию о счете для указанного пользователя(Успех):
+
+```
+curl -v -X GET localhost:3000/api/v1/deposits/c4a07944-a0b3-4c10-9803-6af93971b3d5
+```
+
+Попытаться сделать перевод денег от пользователя другому пользователю(инициатор транзакции не имеет счета):
+
+```
+curl -v -H "Content-Type: application/json" -X POST localhost:3000/api/v1/deposits/c4a07944-a0b3-4c10-9803-6af93971b3d5/transactions -d '{"amount": 5000, "reason": "user to user transaction", "initiatorUserUuid": "18866f0a-4a34-46a0-aff0-69d3334f3c23"}'
+```
+
+Попытаться закинуть деньги с несуществующего счета на существующий(Не успех):
+
+```
+curl -v -H "Content-Type: application/json" -X POST localhost:3000/api/v1/deposits/18866f0a-4a34-46a0-aff0-69d3334f3c23/transactions -d '{"amount": 2000, "reason": "user to  user transaction", "initiatorUserUuid": "18866f0a-4a34-46a0-aff0-69d3334f3c23"}'
+```
+
+Создать счет для другого пользователя(Успех):
+
+```
+curl -v -H "Content-Type: application/json" -X POST localhost:3000/api/v1/deposits/18866f0a-4a34-46a0-aff0-69d3334f3c23/transactions -d '{"amount": 2000, "reason": "bank money transfer"}'
+```
+
+Вывести деньги со счета указанного пользователя(Успех):
+
+```
+curl -v -H "Content-Type: application/json" -X POST localhost:3000/api/v1/deposits/18866f0a-4a34-46a0-aff0-69d3334f3c23/transactions -d '{"amount": -500, "reason": "avito account+ month subscription"}'
+```
+
 ### Проблемы при проектировании api и других различных фич:
 
 2. Изменение баланса пользователя, которое тоже можно сделать разными методами:
@@ -60,3 +108,6 @@ CREATE TABLE IF NOT EXISTS Transactions(
       фича, которая используется в основном только в банковских приложениях, я привяжу транзакцию
       к идентификаторую юзера, чей счет в данный момент редактируется и является единственным и 
       уникальным
+4. Для обеспечения синхронизации между транзакциями к разным репозиториям нужно выделить интерфейс
+    транзактора и передавать его из конкретного репозитория в юзкейс. Тогда любой репозиторий
+    мог бы реализовывать его транзакции с возможностью коммитов и роллбеков(не успел это сделать)
