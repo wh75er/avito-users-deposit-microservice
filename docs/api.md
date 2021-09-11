@@ -51,8 +51,7 @@ List of contents:
         - `400`
             ```json
             {
-                "error": "invalid data format",
-                "description": "failed to convert provided userUuid field into UUID"
+                "error": "invalid data format: failed to convert provided userUuid field into UUID"
             }
             ```
         - `404`
@@ -64,8 +63,7 @@ List of contents:
         - `500`
             ```json
             {
-                "error": "something went wrong with the repository",
-                "description": "database connection is down"
+                "error": "something went wrong with the repository: database connection is down",
             }
             ```
 
@@ -96,45 +94,38 @@ List of contents:
         - `400`
             ```json
             {
-                "error": "invalid data format",
-                "description": "failed to convert provided userUuid field into UUID"
+                "error": "invalid data format: failed to convert provided userUuid field into UUID"
             }
             ```
             ```json
             {
-                "error": "invalid data format",
-                "description": "amount or reason field was not provided"
+                "error": "invalid data format: amount or reason field was not provided"
             }
             ```
             ```json
             {
-                "error": "invalid data format",
-                "description": "amount of funds cannot be 0"
+                "error": "invalid data format: amount of funds cannot be 0"
             }
             ```
             ```json
             {
-                "error": "invalid data format",
-                "description": "reason cannot be more than 250 characters"
+                "error": "invalid data format: reason cannot be more than 250 characters"
             }
             ```
             ```json
             {
-                "error": "invalid request",
-                "description": "initiator cannot withdraw funds from other user's deposit"
+                "error": "invalid request: initiator cannot withdraw funds from other user's deposit"
             }
             ```
         - `402`
             ```json
             {
-                "error": "not enough funds",
-                "description": "not enough funds on user's deposit to make withdraw with specified value"
+                "error": "not enough funds: not enough funds on user's deposit to make withdraw with specified value"
             }
             ```
             ```json
             {
-                "error": "not enough funds",
-                "description": "not enough funds on initiator user's deposit to make funds transfer to another user"
+                "error": "not enough funds: not enough funds on initiator user's deposit to make funds transfer to another user"
             }
             ```
         - `404`
@@ -151,8 +142,7 @@ List of contents:
         - `500`
             ```json
             {
-                "error": "something went wrong with the repository",
-                "description": "database connection is down"
+                "error": "something went wrong with the repository: database connection is down"
             }
             ```
 
